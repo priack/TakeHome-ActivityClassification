@@ -44,6 +44,7 @@ This search was repeated in a 5-fold validation way. This means that each combin
 Once the best configuration was selected, a new model was trained using the whole training data.
 Finally, this last model was used to predict the values of our left-out data (the testing data). This resulted in a weighted accuracy of 70.7%, a f1-macro score of 0.722 and a Cohen's kappa score of 0.725. All in all a very good result for an inbalance 6 class problem.
 Furthermore, if we look at the confusion matrix, we can see that there are clearly 2 blocks of data. The ones that correspond to motion activities, and the ones that correspond to inmobile activities. The biggest missclassification occurs in the inmobile activities (sitting and standing) with 23-24% of confusion between them. Honestly, I am surprise that is this low, since the data from the accelerometer in those two conditions can be extremely similar (since there is no acceleration while inmobile). I would explore more these results to ensure that there is no  some problem there. Other than that, the activity that show the worst performance is Downstairs, which is confused a lot with Walking and, to some extent, with Upstairs. The first error is probably due to the data imbalance, while the second could be a similarity between both classes. Probably features that better identify the vertical motion should be implemented to reduce the error of these two classes. Also, more data would be benefficial.
+![alt text](https://github.com/priack/Raia_exercise/blob/main/confusionMatrix.png)
 
 
 # Limitations
