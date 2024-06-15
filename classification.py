@@ -69,6 +69,6 @@ def hyper_parameter_search(x, y):
     metrics = {'acc': 'balanced_accuracy',
                'f1': 'f1_macro',
                'kappa': kappa}
-    search = GridSearchCV(pipe, param_grid, n_jobs=-1, cv=3)
+    search = GridSearchCV(pipe, param_grid, scoring=metrics, n_jobs=-1, cv=3, refit='acc')
     scores = cross_validate(search, x, y, scoring=metrics, cv=cv, return_estimator=True)
     return scores
