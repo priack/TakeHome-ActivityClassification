@@ -1,7 +1,7 @@
 import numpy as np
 from io_utils import read_data
 from features import feature_extraction
-from classification import hyper_parameter_search, data_split, train_model, test_model
+from classification import hyper_parameter_search, data_split, train_model, test_model, createConfusionMatrix
 
 if __name__ == '__main__':
     data = read_data()
@@ -27,4 +27,7 @@ if __name__ == '__main__':
     params = {'criterion': 'entropy', 'n_estimators': 100, 'max_depth': 12}
     mdl = train_model(xTr, yTr, params)
     cm, acc, f1, kappa = test_model(mdl, xTst, yTst)
+    labels = ['Walking', 'Jogging', 'Upstairs', 'Downstairs', 'Sitting', 'Standing']
+    cmf = createConfusionMatrix(cm, labels)
+
 

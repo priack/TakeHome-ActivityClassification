@@ -67,7 +67,6 @@ def hyper_parameter_search(x, y):
         'model__n_estimators': [5, 10, 100],
         'model__max_depth': [3, 7, 12]
     }
-    kappa = mt.make_scorer(mt.cohen_kappa_score)
     metrics = {'acc': 'balanced_accuracy'}
     search = GridSearchCV(pipe, param_grid, scoring=metrics, n_jobs=-1, cv=3, refit='acc')
     scores = cross_validate(search, x, y, scoring=metrics, cv=cv, return_estimator=True)
@@ -91,17 +90,15 @@ def test_model(mdl, x, y):
     return cm, acc, f1, kappa
 
 
-def createConfusionMatrix(cm, labels, normalise: bool=True) -> go.Heatmap:
-    """
-    Creates the graphical object for a confusion matrix.It is possible to establish if we want to normalise the data
-    or not, as well as indicate whether it is for OOD (the labels will be OOD and ID), or for classes, in which case
-    the labels from Motion Type and class of Interest will be used.
-    """
+def createConfusionMatrix(cm, labels, normalise: bool=True) -> go.Figure:
     z = copy.copy(cm)
     nrow = len(z)
     if normalise:
-        z = z / np.sum(z, 1)
+        for i in range(nrow):
+            z[i, :] = cm[i, :] / np.sum(cm[i, :])
+        print(z)
     text = [[f'{z[i,j]:.2f}' for j in range(nrow)] for i in range(nrow-1, -1, -1)]
-    ret = go.Heatmap(z=z[::-1], y=labels[::-1], x=labels, text=text, texttemplate="%{text}", showscale=False,
-                     colorscale='Greys')
-    return ret
+    fig = go.Figure(go.Heatmap(z=z[::-1], y=labels[::-1], x=labels, text=text, texttemplate="%{text}", showscale=False,
+                     colorscale='Greys'))
+    fig.show()
+    return fig
