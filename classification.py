@@ -4,6 +4,8 @@ from sklearn.ensemble import RandomForestClassifier
 import sklearn.metrics as mt
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import cross_validate, StratifiedKFold, GridSearchCV
+import plotly.graph_objects as go
+import copy
 
 
 class ThressholdScaler(BaseEstimator, TransformerMixin):
@@ -66,9 +68,40 @@ def hyper_parameter_search(x, y):
         'model__max_depth': [3, 7, 12]
     }
     kappa = mt.make_scorer(mt.cohen_kappa_score)
-    metrics = {'acc': 'balanced_accuracy',
-               'f1': 'f1_macro',
-               'kappa': kappa}
+    metrics = {'acc': 'balanced_accuracy'}
     search = GridSearchCV(pipe, param_grid, scoring=metrics, n_jobs=-1, cv=3, refit='acc')
     scores = cross_validate(search, x, y, scoring=metrics, cv=cv, return_estimator=True)
     return scores
+
+
+def train_model(x, y, params):
+    ts = ThressholdScaler()
+    mdl = RandomForestClassifier(**params)
+    pipe = Pipeline([('scaler', ts), ('model', mdl)])
+    pipe.fit(x, y)
+    return pipe
+
+
+def test_model(mdl, x, y):
+    pred = mdl.predict(x)
+    cm = mt.confusion_matrix(y, pred)
+    acc = mt.balanced_accuracy_score(y, pred)
+    f1 = mt.f1_score(y, pred, average='macro')
+    kappa = mt.cohen_kappa_score(y, pred)
+    return cm, acc, f1, kappa
+
+
+def createConfusionMatrix(cm, labels, normalise: bool=True) -> go.Heatmap:
+    """
+    Creates the graphical object for a confusion matrix.It is possible to establish if we want to normalise the data
+    or not, as well as indicate whether it is for OOD (the labels will be OOD and ID), or for classes, in which case
+    the labels from Motion Type and class of Interest will be used.
+    """
+    z = copy.copy(cm)
+    nrow = len(z)
+    if normalise:
+        z = z / np.sum(z, 1)
+    text = [[f'{z[i,j]:.2f}' for j in range(nrow)] for i in range(nrow-1, -1, -1)]
+    ret = go.Heatmap(z=z[::-1], y=labels[::-1], x=labels, text=text, texttemplate="%{text}", showscale=False,
+                     colorscale='Greys')
+    return ret
