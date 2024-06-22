@@ -135,6 +135,10 @@ def test_model(mdl, x: NDArray, y: NDArray) -> tuple[NDArray, float, float, floa
     acc = mt.balanced_accuracy_score(y, pred)
     f1 = mt.f1_score(y, pred, average='macro')
     kappa = mt.cohen_kappa_score(y, pred)
+    print(f'Performance:\n'
+          f'\t Accuracy: {acc:.3f}'
+          f'\t F1: {f1:.3f}'
+          f'\t Kappa: {kappa:.3f}')
     return cm, acc, f1, kappa
 
 
@@ -146,12 +150,11 @@ def createConfusionMatrix(cm: NDArray, labels: tuple[str], normalise: bool=True)
     :param normalise: A boolean value indicating whether to normalize the confusion matrix. Default is True.
     :return: A plotly.graph_objects.Figure object representing the heatmap of the confusion matrix.
     """
-    z = copy.copy(cm)
+    z = copy.copy(cm.astype(float))
     nrow = len(z)
     if normalise:
         for i in range(nrow):
             z[i, :] = cm[i, :] / np.sum(cm[i, :])
-        print(z)
     text = [[f'{z[i,j]:.2f}' for j in range(nrow)] for i in range(nrow-1, -1, -1)]
     fig = go.Figure(go.Heatmap(z=z[::-1], y=labels[::-1], x=labels, text=text, texttemplate="%{text}", showscale=False,
                      colorscale='Greys'))

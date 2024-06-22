@@ -107,7 +107,7 @@ def feature_extraction(data: NDArray, winLen: float=5e9, stride: int=1) -> tuple
             t1 = time()
             dt = t1 - t0
             totTime = dt / i * lw
-            print(f'Step {i+1} / {lw}, time: {dt}, estimated tot {totTime}, rem {totTime - dt} ')
+            print(f'Step {i+1} / {lw}, time: {dt:.2f} s, estimated tot {totTime:.2f} s, rem {totTime - dt:.2f} s')
     val = label[:, 0] != -1
     features = features[val]
     label = label[val]
