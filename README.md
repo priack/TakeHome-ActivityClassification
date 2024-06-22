@@ -84,3 +84,9 @@ Confusion matrix for window lengths 5 s and stride 10
 The corresponding metris were: Accuracy: 0.705	 F1: 0.719	 Kappa: 0.726
 
 As we can see, my initial observations were right. While the performance for 10 or 15 s is slightly better, this would introduce a 2.5 / 5 s delay on the prediction. Also, 15 s starts to decrease in the F1 score. Regarding the stride, we can see that using a lower one does not only do not lead to improvements, but it actually decreases the performance, while at the same time increases the training time.
+
+Finally, I wanted to see what the performance was with the pre-defined features provided. This is the confusion matrix:
+![alt text](https://github.com/priack/Raia_exercise/blob/main/confusionMatrix_predefined.png)
+The corresponding metris were: Accuracy: 0.651	 F1: 0.684	 Kappa: 0.672
+
+While there was no feature selection (much more important in this case due the the 42 features compared to the 8 in my previous analysis), in the previous analysis there was neither. Furthermore, the training time was higher, even if not in a really significant way (both cases in the order of seconds). We can see that the pre-defined features have a worse performance all across the board, including mixing motion activities (Upstairs) with inmobile ones (Sitting and Standing). The only case where the performance was slightly better was for the correct classification of Sitting and Downstairs. For every other activity the performance was worse. The rest of the metrics show a significant decrease as well.
