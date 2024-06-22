@@ -67,3 +67,20 @@ This has lead to the following limitations:
 # Future work
 Before commiting to Random Forest as classification model, I would explore different architectures such as Neural Networks or the above mentioned GRadientboost classifier that has show quite good results. Also, depending on the requiremetns of the deployed solution, I would integrate temporal information into the model. Right now every window is classified independently from the past. Something like a Kalman filter could be used to determine the actual activity based no only on the latest prediction but by the past ones. This would increase the response time, but also the classification accuracy, as spurios events or outliers, would be filtered out.
 Another venue to explore would be the use of Neural Networks, in particular recursive ones, to be able to include the time information. Also, using CNN could lead to new features, instead of the hand crafted ones.
+
+# Additions
+To keep it easy to track, I will add here the results that I further explored in my own time. I've also increased the quality of code. As remainder, the default values were 5 s and stride 25. 
+Confusion matrix for window length 10 s and stride 25
+![alt text](https://github.com/priack/Raia_exercise/blob/main/confusionMatrix_10s.png)
+The corresponding metris were: Accuracy: 0.732	 F1: 0.740	 Kappa: 0.755
+
+Confusion matrix for window lengths 10 s and stride 25
+![alt text](https://github.com/priack/Raia_exercise/blob/main/confusionMatrix_15s.png)
+The corresponding metris were: Accuracy: 0.732	 F1: 0.731	 Kappa: 0.760
+
+
+Confusion matrix for window lengths 5 s and stride 10
+![alt text](https://github.com/priack/Raia_exercise/blob/main/confusionMatrix_stride10.png)
+The corresponding metris were: Accuracy: 0.705	 F1: 0.719	 Kappa: 0.726
+
+As we can see, my initial observations were right. While the performance for 10 or 15 s is slightly better, this would introduce a 2.5 / 5 s delay on the prediction. Also, 15 s starts to decrease in the F1 score. Regarding the stride, we can see that using a lower one does not only do not lead to improvements, but it actually decreases the performance, while at the same time increases the training time.
