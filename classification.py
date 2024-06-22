@@ -1,4 +1,11 @@
+"""
+This document contains the functions needed to perfomr the classification task.
+
+Author: Jacobo Fernandez Vargas
+"""
+
 import numpy as np
+from numpy.typing import NDArray
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.ensemble import RandomForestClassifier
 import sklearn.metrics as mt
@@ -10,11 +17,18 @@ import copy
 
 class ThressholdScaler(BaseEstimator, TransformerMixin):
     def __init__(self, qoffset=1.5):
+        """
+        Threshold scaler based on Tukey's Fence algorithm. This class is to be used as part of a sklearn pipeline.
+        :param qoffset: Factor to multiply the inter-quartile distance to consider a value outlier.
+        """
         self.qoffset = qoffset
         self.lower = None
         self.upper = None
 
     def fit(self, X, y=None):
+        """
+        Calculates the maximum and minimum value for each feature.
+        """
         q1 = np.percentile(X, 25, axis=0)
         q3 = np.percentile(X, 75, axis=0)
         iqr = q3 - q1
@@ -23,10 +37,12 @@ class ThressholdScaler(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X, y=None):
+        """
+        Clips each feature to the maximum and minimum value previously calculated.
+        """
         nFeat = len(self.upper)
         for i in range(nFeat):
-            X[X[:, i] > self.upper[i], i] = self.upper[i]
-            X[X[:, i] < self.lower[i], i] = self.lower[i]
+            X[:, i] = np.clip(X[:, i], self.lower[i], self.upper[i])
         return X
 
     def fit_transform(self, X, y=None, **fit_params):
@@ -34,7 +50,17 @@ class ThressholdScaler(BaseEstimator, TransformerMixin):
         return self.transform(X, y)
 
 
-def data_split(x, y):
+def data_split(x: NDArray, y:NDArray) -> tuple[NDArray, NDArray, NDArray, NDArray]:
+    """
+    Splits the data into training and testing data sets with a 9/1 proportion. It does so maintaing the temporal
+    coherence of the features, as well as the distribution of the labels across subjects and activities.
+    :param x: Features
+    :param y: Labels
+    :return xTst: Test features
+    :return xTr: Training features
+    :return yTst: Test labels
+    :return yTr: Training labels
+    """
     us = np.unique(y[:, 0])
     ua = np.unique(y[:, 1])
     xTst, xTr = [], []
@@ -57,7 +83,14 @@ def data_split(x, y):
     return xTst, xTr, yTst, yTr
 
 
-def hyper_parameter_search(x, y):
+def hyper_parameter_search(x: NDArray, y: NDArray) ->dict:
+    """
+    This function performs a hyperparameter search for a RandomForestClassifier using GridSearchCV.
+
+    :param x: A numpy array representing the input data for training the model.
+    :param y: A numpy array representing the actual labels for the input data.
+    :return: A dictionary containing the cross-validation scores and estimators for each fold of the StratifiedKFold.
+    """
     cv = StratifiedKFold(shuffle=True)
     ts = ThressholdScaler()
     mdl = RandomForestClassifier()
@@ -73,7 +106,15 @@ def hyper_parameter_search(x, y):
     return scores
 
 
-def train_model(x, y, params):
+def train_model(x: NDArray, y: NDArray, params: dict) -> Pipeline:
+    """
+    This function trains a model using the given data and parameters.
+
+    :param x: A numpy array representing the input data for training the model.
+    :param y: A numpy array representing the actual labels for the input data.
+    :param params: A dictionary containing the parameters for the RandomForestClassifier.
+    :return: A trained Pipeline object which includes a ThressholdScaler and a RandomForestClassifier.
+    """
     ts = ThressholdScaler()
     mdl = RandomForestClassifier(**params)
     pipe = Pipeline([('scaler', ts), ('model', mdl)])
@@ -81,7 +122,14 @@ def train_model(x, y, params):
     return pipe
 
 
-def test_model(mdl, x, y):
+def test_model(mdl, x: NDArray, y: NDArray) -> tuple[NDArray, float, float, float]:
+    """
+    This function tests a model by making predictions on the given data and calculating various metrics.
+    :param mdl: The model to be tested.
+    :param x: A numpy array representing the input data for testing the model.
+    :param y: A numpy array representing the actual labels for the input data.
+    :return: A tuple containing the confusion matrix, balanced accuracy score, macro F1 score, and Cohen's kappa score.
+    """
     pred = mdl.predict(x)
     cm = mt.confusion_matrix(y, pred)
     acc = mt.balanced_accuracy_score(y, pred)
@@ -90,7 +138,14 @@ def test_model(mdl, x, y):
     return cm, acc, f1, kappa
 
 
-def createConfusionMatrix(cm, labels, normalise: bool=True) -> go.Figure:
+def createConfusionMatrix(cm: NDArray, labels: tuple[str], normalise: bool=True) -> go.Figure:
+    """
+    This function creates a confusion matrix and visualizes it using a heatmap.
+    :param cm: A numpy array representing the confusion matrix.
+    :param labels: A tuple of strings representing the labels for the confusion matrix.
+    :param normalise: A boolean value indicating whether to normalize the confusion matrix. Default is True.
+    :return: A plotly.graph_objects.Figure object representing the heatmap of the confusion matrix.
+    """
     z = copy.copy(cm)
     nrow = len(z)
     if normalise:

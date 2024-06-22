@@ -1,3 +1,7 @@
+"""
+This document contains the main function to load the data, train a model, and plot a confusion matrix.
+"""
+
 import numpy as np
 from io_utils import read_data
 from features import feature_extraction
