@@ -4,6 +4,7 @@ This document contains the function needed to obtain the data from the CSV file 
 Author: Jacobo Fernandez Vargas
 """
 import pandas as pd
+import numpy as np
 from numpy.typing import NDArray
 
 
@@ -29,8 +30,11 @@ def read_feature_data() -> tuple[NDArray, NDArray]:
     """
     df = pd.read_csv('./data/WISDM_features.txt', header=0)
     features = df.iloc[:, 2:-2].to_numpy()
+    mask = features == '?'
+    features[mask] = np.nan
+    features = features.astype(float)
     labels = df.iloc[:, [1, -1]]
     labels.iloc[:, -1] = labels.iloc[:, -1].replace(
         to_replace=['Walking', 'Jogging', 'Upstairs', 'Downstairs', 'Sitting', 'Standing'], value=[0, 1, 2, 3, 4, 5])
-    labels = labels.to_numpy()
+    labels = labels.to_numpy().astype(int)
     return features, labels
