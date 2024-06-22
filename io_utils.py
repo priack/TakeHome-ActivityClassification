@@ -6,6 +6,7 @@ Author: Jacobo Fernandez Vargas
 import pandas as pd
 from numpy.typing import NDArray
 
+
 def read_data() -> NDArray:
     """
     Reads the data from the WIDSM file, and replaces the activity categorical value ('Walking', 'Jogging', 'Upstairs',
@@ -17,6 +18,7 @@ def read_data() -> NDArray:
                            value=[0, 1, 2, 3, 4, 5], inplace=True)
     data = df.to_numpy()
     return data
+
 
 def read_feature_data() -> tuple[NDArray, NDArray]:
     """
