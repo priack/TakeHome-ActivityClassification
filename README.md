@@ -74,7 +74,7 @@ Confusion matrix for window length 10 s and stride 25
 ![alt text](https://github.com/priack/Raia_exercise/blob/main/confusionMatrix_10s.png)
 The corresponding metris were: Accuracy: 0.732	 F1: 0.740	 Kappa: 0.755
 
-Confusion matrix for window lengths 10 s and stride 25
+Confusion matrix for window lengths 15 s and stride 25
 ![alt text](https://github.com/priack/Raia_exercise/blob/main/confusionMatrix_15s.png)
 The corresponding metris were: Accuracy: 0.732	 F1: 0.731	 Kappa: 0.760
 
