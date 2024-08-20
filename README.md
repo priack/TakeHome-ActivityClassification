@@ -1,5 +1,5 @@
 # Introduction
-This is the code exercise for the Machine Learning Engineer position at Raia. The goal was to create an activity classification model from accelerometer data.
+This is the code exercise for the Machine Learning Engineer position. The goal was to create an activity classification model from accelerometer data.
 
 # How to run
 Just execute the main.py file.The output should be the confusion matrix present in this document as well. Further exploration of the data can be done manually.
